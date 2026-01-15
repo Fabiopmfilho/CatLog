@@ -1,4 +1,11 @@
-import { Calendar, Clock, StickyNote, ListChecks, Check } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  StickyNote,
+  ListChecks,
+  Check,
+  GripVertical,
+} from "lucide-react";
 import styles from "./ReminderCard.module.css";
 import { Reminder } from "../App";
 
@@ -75,6 +82,10 @@ const ReminderCard = ({
       onDragEnd={onDragEnd}
     >
       <div className={styles.content}>
+        <div className={styles.dragHandle}>
+          <GripVertical size={20} color="#9CA3AF" />
+        </div>
+
         <div className={styles.typeIcon}>
           {reminder.type === "note" ? (
             <StickyNote size={20} color="#2563EB" />

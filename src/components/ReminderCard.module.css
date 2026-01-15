@@ -169,6 +169,24 @@
   font-weight: 500;
 }
 
+.dragHandle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  cursor: grab;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.card:hover .dragHandle {
+  opacity: 1;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
 @media (max-width: 600px) {
   .card {
     padding: 12px;
