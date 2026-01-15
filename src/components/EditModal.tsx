@@ -91,7 +91,7 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
                   placeholder="Adicionar item..."
                   value={newItemText}
                   onChange={(e) => setNewItemText(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && addItem()}
+                  onKeyUp={(e) => e.key === "Enter" && addItem()}
                   className={styles.input}
                 />
                 <button onClick={addItem} className={styles.addItemButton}>
