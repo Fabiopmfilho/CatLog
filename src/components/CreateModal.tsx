@@ -1,38 +1,34 @@
 import { useState } from "react";
-import { X, Save, Trash2, Plus } from "lucide-react";
-import styles from "./EditModal.module.css";
-import { Reminder } from "../App";
+import { X, Save, StickyNote, ListChecks, Plus, Trash2 } from "lucide-react";
+import styles from "./CreateModal.module.css";
+import { Reminder, ReminderType } from "../App";
 
 type Props = {
-  reminder: Reminder;
   onClose: () => void;
-  onSave: (id: string, updatedReminder: Omit<Reminder, "id">) => void;
-  onDelete: (id: string) => void;
+  onSave: (reminder: Omit<Reminder, "id">) => void;
 };
 
-const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
-  const [text, setText] = useState(reminder.text);
-  const [datetime, setDatetime] = useState(reminder.datetime);
-  const [items, setItems] = useState(reminder.items || []);
+const CreateModal = ({ onClose, onSave }: Props) => {
+  const [type, setType] = useState<ReminderType>("note");
+  const [text, setText] = useState("");
+  const [datetime, setDatetime] = useState("");
+  const [items, setItems] = useState<
+    { id: string; text: string; checked: boolean }[]
+  >([]);
   const [newItemText, setNewItemText] = useState("");
 
   const handleSave = () => {
     if (!datetime) return;
 
-    if (reminder.type === "note" && !text.trim()) return;
-    if (reminder.type === "list" && items.length === 0) return;
+    if (type === "note" && !text.trim()) return;
+    if (type === "list" && items.length === 0) return;
 
-    onSave(reminder.id, {
-      type: reminder.type,
-      text: reminder.type === "note" ? text : `Lista com ${items.length} itens`,
+    onSave({
+      type,
+      text: type === "note" ? text : `Lista com ${items.length} itens`,
       datetime,
-      items: reminder.type === "list" ? items : undefined,
+      items: type === "list" ? items : undefined,
     });
-    onClose();
-  };
-
-  const handleDelete = () => {
-    onDelete(reminder.id);
     onClose();
   };
 
@@ -49,26 +45,39 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
     setItems(items.filter((item) => item.id !== id));
   };
 
-  const toggleItem = (id: string) => {
-    setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
-    );
-  };
-
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Editar Lembrete</h2>
+          <h2 className={styles.title}>Novo Lembrete</h2>
           <button onClick={onClose} className={styles.closeButton}>
             <X size={20} />
           </button>
         </div>
 
         <div className={styles.body}>
-          {reminder.type === "note" ? (
+          <div className={styles.typeSelector}>
+            <button
+              className={`${styles.typeButton} ${
+                type === "note" ? styles.typeButtonActive : ""
+              }`}
+              onClick={() => setType("note")}
+            >
+              <StickyNote size={20} />
+              <span>Nota</span>
+            </button>
+            <button
+              className={`${styles.typeButton} ${
+                type === "list" ? styles.typeButtonActive : ""
+              }`}
+              onClick={() => setType("list")}
+            >
+              <ListChecks size={20} />
+              <span>Lista</span>
+            </button>
+          </div>
+
+          {type === "note" ? (
             <div className={styles.formGroup}>
               <label className={styles.label}>
                 O que você precisa lembrar?
@@ -102,17 +111,7 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
               <div className={styles.itemsList}>
                 {items.map((item) => (
                   <div key={item.id} className={styles.item}>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={item.checked}
-                        onChange={() => toggleItem(item.id)}
-                        className={styles.checkbox}
-                      />
-                      <span className={item.checked ? styles.checkedText : ""}>
-                        {item.text}
-                      </span>
-                    </label>
+                    <span className={styles.itemText}>{item.text}</span>
                     <button
                       onClick={() => removeItem(item.id)}
                       className={styles.removeItemButton}
@@ -142,15 +141,13 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
         </div>
 
         <div className={styles.footer}>
-          <button onClick={handleDelete} className={styles.deleteButton}>
-            <Trash2 size={18} />
-            <span>Deletar</span>
+          <button onClick={onClose} className={styles.cancelButton}>
+            Cancelar
           </button>
           <button
             onClick={handleSave}
             disabled={
-              !datetime ||
-              (reminder.type === "note" ? !text.trim() : items.length === 0)
+              !datetime || (type === "note" ? !text.trim() : items.length === 0)
             }
             className={styles.saveButton}
           >
@@ -163,4 +160,4 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
   );
 };
 
-export default EditModal;
+export default CreateModal;

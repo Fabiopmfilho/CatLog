@@ -3,18 +3,22 @@ import { Plus, Calendar, Cat } from "lucide-react";
 import styles from "./App.module.css";
 import ReminderCard from "./components/ReminderCard";
 import EditModal from "./components/EditModal";
+import CreateModal from "./components/CreateModal";
+
+export type ReminderType = "note" | "list";
 
 export type Reminder = {
   id: string;
+  type: ReminderType;
   text: string;
   datetime: string;
+  items?: { id: string; text: string; checked: boolean }[];
 };
 
 function App() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
-  const [text, setText] = useState("");
-  const [datetime, setDatetime] = useState("");
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("reminders");
@@ -25,16 +29,16 @@ function App() {
     localStorage.setItem("reminders", JSON.stringify(reminders));
   }, [reminders]);
 
-  const addReminder = () => {
-    if (!text.trim() || !datetime) return;
-    setReminders([...reminders, { id: crypto.randomUUID(), text, datetime }]);
-    setText("");
-    setDatetime("");
+  const addReminder = (reminder: Omit<Reminder, "id">) => {
+    setReminders([...reminders, { ...reminder, id: crypto.randomUUID() }]);
   };
 
-  const updateReminder = (id: string, text: string, datetime: string) => {
+  const updateReminder = (
+    id: string,
+    updatedReminder: Omit<Reminder, "id">
+  ) => {
     setReminders(
-      reminders.map((r) => (r.id === id ? { ...r, text, datetime } : r))
+      reminders.map((r) => (r.id === id ? { ...updatedReminder, id } : r))
     );
   };
 
@@ -52,42 +56,9 @@ function App() {
         <div className={styles.header}>
           <h1 className={styles.title}>
             CatLog
-            <Cat size={24} color="blue" />
+            <Cat size={24} color="#2563EB" style={{ marginLeft: 8 }} />
           </h1>
           <p className={styles.subtitle}>Seus lembretes organizados</p>
-        </div>
-
-        <div className={styles.addCard}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>O que você precisa lembrar?</label>
-            <input
-              type="text"
-              placeholder="Ex: Reunião com o time"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyUp={(e) => e.key === "Enter" && addReminder()}
-              className={styles.input}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Quando?</label>
-            <input
-              type="datetime-local"
-              value={datetime}
-              onChange={(e) => setDatetime(e.target.value)}
-              className={styles.input}
-            />
-          </div>
-
-          <button
-            onClick={addReminder}
-            disabled={!text.trim() || !datetime}
-            className={styles.addButton}
-          >
-            <Plus size={20} />
-            <span>Adicionar Lembrete</span>
-          </button>
         </div>
 
         <div className={styles.remindersList}>
@@ -96,7 +67,7 @@ function App() {
               <Calendar size={48} color="#9CA3AF" />
               <p className={styles.emptyText}>Nenhum lembrete ainda</p>
               <p className={styles.emptySubtext}>
-                Adicione seu primeiro lembrete acima
+                Clique no botão + para criar seu primeiro lembrete
               </p>
             </div>
           ) : (
@@ -105,11 +76,40 @@ function App() {
                 key={reminder.id}
                 reminder={reminder}
                 onClick={() => setEditingReminder(reminder)}
+                onToggleItem={(itemId) => {
+                  if (reminder.type === "list" && reminder.items) {
+                    const updatedItems = reminder.items.map((item) =>
+                      item.id === itemId
+                        ? { ...item, checked: !item.checked }
+                        : item
+                    );
+                    setReminders(
+                      reminders.map((r) =>
+                        r.id === reminder.id ? { ...r, items: updatedItems } : r
+                      )
+                    );
+                  }
+                }}
               />
             ))
           )}
         </div>
       </div>
+
+      <button
+        className={styles.fabButton}
+        onClick={() => setIsCreateModalOpen(true)}
+        title="Adicionar lembrete"
+      >
+        <Plus size={28} />
+      </button>
+
+      {isCreateModalOpen && (
+        <CreateModal
+          onClose={() => setIsCreateModalOpen(false)}
+          onSave={addReminder}
+        />
+      )}
 
       {editingReminder && (
         <EditModal

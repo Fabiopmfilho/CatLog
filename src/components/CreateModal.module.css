@@ -86,6 +86,40 @@
   padding: 24px;
 }
 
+.typeSelector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.typeButton {
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.typeButton:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.typeButtonActive {
+  border-color: #2563eb;
+  background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 100%);
+  color: #2563eb;
+}
+
 .formGroup {
   margin-bottom: 20px;
 }
@@ -180,24 +214,10 @@
   border: 1px solid #e5e7eb;
 }
 
-.checkboxLabel {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.itemText {
+  color: #374151;
+  font-size: 14px;
   flex: 1;
-  cursor: pointer;
-}
-
-.checkbox {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: #2563eb;
-}
-
-.checkedText {
-  text-decoration: line-through;
-  color: #9ca3af;
 }
 
 .removeItemButton {
@@ -237,25 +257,21 @@
   border-radius: 0 0 16px 16px;
 }
 
-.deleteButton {
+.cancelButton {
   flex: 1;
-  background: #fee2e2;
-  color: #dc2626;
+  background: #f3f4f6;
+  color: #374151;
   padding: 12px 24px;
   border-radius: 12px;
   border: none;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   transition: all 0.2s;
 }
 
-.deleteButton:hover {
-  background: #fecaca;
+.cancelButton:hover {
+  background: #e5e7eb;
 }
 
 .saveButton {
