@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Calendar } from "lucide-react";
+import { Plus, Calendar, Cat } from "lucide-react";
 import styles from "./App.module.css";
 import ReminderCard from "./components/ReminderCard";
 import EditModal from "./components/EditModal";
@@ -50,7 +50,10 @@ function App() {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>
-          <h1 className={styles.title}>catLog</h1>
+          <h1 className={styles.title}>
+            CatLog
+            <Cat size={24} color="blue" />
+          </h1>
           <p className={styles.subtitle}>Seus lembretes organizados</p>
         </div>
 
@@ -62,7 +65,7 @@ function App() {
               placeholder="Ex: Reunião com o time"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && addReminder()}
+              onKeyUp={(e) => e.key === "Enter" && addReminder()}
               className={styles.input}
             />
           </div>
