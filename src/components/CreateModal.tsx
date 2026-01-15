@@ -135,9 +135,15 @@ const CreateModal = ({ onClose, onSave }: Props) => {
                 type="checkbox"
                 checked={hasDatetime}
                 onChange={(e) => setHasDatetime(e.target.checked)}
+                onClick={(e) => e.stopPropagation()}
                 className={styles.toggleCheckbox}
               />
-              <span className={styles.toggleText}>Definir data e hora</span>
+              <span
+                className={styles.toggleText}
+                onClick={(e) => e.stopPropagation()}
+              >
+                Definir data e hora?
+              </span>
             </label>
           </div>
 
