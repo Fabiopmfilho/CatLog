@@ -15,17 +15,17 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
   const [datetime, setDatetime] = useState(reminder.datetime);
   const [items, setItems] = useState(reminder.items || []);
   const [newItemText, setNewItemText] = useState("");
+  const [hasDatetime, setHasDatetime] = useState(!!reminder.datetime);
 
   const handleSave = () => {
-    if (!datetime) return;
-
     if (reminder.type === "note" && !text.trim()) return;
     if (reminder.type === "list" && items.length === 0) return;
 
     onSave(reminder.id, {
       type: reminder.type,
       text: reminder.type === "note" ? text : `Lista com ${items.length} itens`,
-      datetime,
+      datetime: hasDatetime ? datetime : undefined,
+      completed: reminder.completed,
       items: reminder.type === "list" ? items : undefined,
     });
     onClose();
@@ -129,16 +129,29 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
               </div>
             </div>
           )}
-
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Quando?</label>
-            <input
-              type="datetime-local"
-              value={datetime}
-              onChange={(e) => setDatetime(e.target.value)}
-              className={styles.input}
-            />
+          <div className={styles.toggleGroup}>
+            <label className={styles.toggleLabel}>
+              <input
+                type="checkbox"
+                checked={hasDatetime}
+                onChange={(e) => setHasDatetime(e.target.checked)}
+                className={styles.toggleCheckbox}
+              />
+              <span className={styles.toggleText}>Definir data e hora</span>
+            </label>
           </div>
+
+          {hasDatetime && (
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Quando?</label>
+              <input
+                type="datetime-local"
+                value={datetime}
+                onChange={(e) => setDatetime(e.target.value)}
+                className={styles.input}
+              />
+            </div>
+          )}
         </div>
 
         <div className={styles.footer}>
@@ -149,8 +162,8 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
           <button
             onClick={handleSave}
             disabled={
-              !datetime ||
-              (reminder.type === "note" ? !text.trim() : items.length === 0)
+              (reminder.type === "note" && !text.trim()) ||
+              (reminder.type === "list" && items.length === 0)
             }
             className={styles.saveButton}
           >

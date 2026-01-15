@@ -118,6 +118,57 @@
   font-weight: 500;
 }
 
+.completeButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #9ca3af;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.completeButton:hover {
+  border-color: #10b981;
+  color: #10b981;
+  background: #ecfdf5;
+}
+
+.completeButtonActive {
+  border-color: #10b981;
+  background: #10b981;
+  color: white;
+}
+
+.completeButtonActive:hover {
+  background: #059669;
+  border-color: #059669;
+}
+
+.cardCompleted {
+  opacity: 0.7;
+  background: #f9fafb;
+}
+
+.textCompleted {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.badgeCompleted {
+  padding: 2px 8px;
+  background: #d1fae5;
+  color: #065f46;
+  font-size: 12px;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
 @media (max-width: 600px) {
   .card {
     padding: 12px;

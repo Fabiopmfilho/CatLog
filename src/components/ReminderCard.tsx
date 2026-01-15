@@ -1,14 +1,20 @@
-import { Calendar, Clock, StickyNote, ListChecks } from "lucide-react";
+import { Calendar, Clock, StickyNote, ListChecks, Check } from "lucide-react";
 import styles from "./ReminderCard.module.css";
 import { Reminder } from "../App";
 
 type Props = {
   reminder: Reminder;
   onClick: () => void;
+  onToggleComplete: () => void;
   onToggleItem?: (itemId: string) => void;
 };
 
-const ReminderCard = ({ reminder, onClick, onToggleItem }: Props) => {
+const ReminderCard = ({
+  reminder,
+  onClick,
+  onToggleComplete,
+  onToggleItem,
+}: Props) => {
   const formatDateTime = (datetime: string) => {
     const date = new Date(datetime);
     const now = new Date();
@@ -27,18 +33,31 @@ const ReminderCard = ({ reminder, onClick, onToggleItem }: Props) => {
     return { dateStr, timeStr, isPast };
   };
 
-  const { dateStr, timeStr, isPast } = formatDateTime(reminder.datetime);
+  const datetimeInfo = reminder.datetime
+    ? formatDateTime(reminder.datetime)
+    : null;
 
   const handleCardClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('input[type="checkbox"]')) {
+    const target = e.target as HTMLElement;
+    if (
+      target.closest('input[type="checkbox"]') ||
+      target.closest(`.${styles.completeButton}`)
+    ) {
       return;
     }
     onClick();
   };
 
+  const handleCompleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleComplete();
+  };
+
   return (
     <div
-      className={`${styles.card} ${isPast ? styles.cardPast : ""}`}
+      className={`${styles.card} ${
+        datetimeInfo?.isPast ? styles.cardPast : ""
+      } ${reminder.completed ? styles.cardCompleted : ""}`}
       onClick={handleCardClick}
     >
       <div className={styles.content}>
@@ -51,7 +70,11 @@ const ReminderCard = ({ reminder, onClick, onToggleItem }: Props) => {
         </div>
 
         <div className={styles.info}>
-          <p className={`${styles.text} ${isPast ? styles.textPast : ""}`}>
+          <p
+            className={`${styles.text} ${
+              datetimeInfo?.isPast ? styles.textPast : ""
+            } ${reminder.completed ? styles.textCompleted : ""}`}
+          >
             {reminder.text}
           </p>
 
@@ -79,25 +102,48 @@ const ReminderCard = ({ reminder, onClick, onToggleItem }: Props) => {
           )}
 
           <div className={styles.meta}>
-            <span
-              className={`${styles.metaItem} ${
-                isPast ? styles.metaItemPast : ""
-              }`}
-            >
-              <Calendar size={14} />
-              <span>{dateStr}</span>
-            </span>
-            <span
-              className={`${styles.metaItem} ${
-                isPast ? styles.metaItemPast : ""
-              }`}
-            >
-              <Clock size={14} />
-              <span>{timeStr}</span>
-            </span>
-            {isPast && <span className={styles.badge}>Vencido</span>}
+            {reminder.datetime && (
+              <>
+                <span
+                  className={`${styles.metaItem} ${
+                    datetimeInfo?.isPast ? styles.metaItemPast : ""
+                  }`}
+                >
+                  <Calendar size={14} />
+                  <span>{datetimeInfo?.dateStr}</span>
+                </span>
+                <span
+                  className={`${styles.metaItem} ${
+                    datetimeInfo?.isPast ? styles.metaItemPast : ""
+                  }`}
+                >
+                  <Clock size={14} />
+                  <span>{datetimeInfo?.timeStr}</span>
+                </span>
+                {datetimeInfo?.isPast && !reminder.completed && (
+                  <span className={styles.badge}>Vencido</span>
+                )}
+              </>
+            )}
+            {reminder.completed && (
+              <span className={styles.badgeCompleted}>Concluído</span>
+            )}
           </div>
         </div>
+
+        <button
+          onClick={handleCompleteClick}
+          className={`${styles.completeButton} ${
+            reminder.completed ? styles.completeButtonActive : ""
+          }`}
+          title={
+            reminder.completed
+              ? "Marcar como pendente"
+              : "Marcar como concluído"
+          }
+        >
+          <Check size={20} />
+        </button>
       </div>
     </div>
   );

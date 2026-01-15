@@ -293,3 +293,27 @@
     flex-direction: column;
   }
 }
+
+.toggleGroup {
+  margin-bottom: 20px;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.toggleCheckbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+.toggleText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}

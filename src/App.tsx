@@ -11,7 +11,8 @@ export type Reminder = {
   id: string;
   type: ReminderType;
   text: string;
-  datetime: string;
+  datetime?: string;
+  completed: boolean;
   items?: { id: string; text: string; checked: boolean }[];
 };
 
@@ -46,9 +47,28 @@ function App() {
     setReminders(reminders.filter((r) => r.id !== id));
   };
 
-  const sortedReminders = [...reminders].sort(
-    (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
-  );
+  const toggleComplete = (id: string) => {
+    setReminders(
+      reminders.map((r) =>
+        r.id === id ? { ...r, completed: !r.completed } : r
+      )
+    );
+  };
+
+  const sortedReminders = [...reminders].sort((a, b) => {
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1;
+    }
+
+    if (a.datetime && b.datetime) {
+      return new Date(a.datetime).getTime() - new Date(b.datetime).getTime();
+    }
+
+    if (a.datetime) return -1;
+    if (b.datetime) return 1;
+
+    return 0;
+  });
 
   return (
     <div className={styles.container}>
@@ -76,6 +96,7 @@ function App() {
                 key={reminder.id}
                 reminder={reminder}
                 onClick={() => setEditingReminder(reminder)}
+                onToggleComplete={() => toggleComplete(reminder.id)}
                 onToggleItem={(itemId) => {
                   if (reminder.type === "list" && reminder.items) {
                     const updatedItems = reminder.items.map((item) =>

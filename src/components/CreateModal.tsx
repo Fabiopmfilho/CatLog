@@ -3,6 +3,8 @@ import { X, Save, StickyNote, ListChecks, Plus, Trash2 } from "lucide-react";
 import styles from "./CreateModal.module.css";
 import { Reminder, ReminderType } from "../App";
 
+type ListItem = { id: string; text: string; checked: boolean };
+
 type Props = {
   onClose: () => void;
   onSave: (reminder: Omit<Reminder, "id">) => void;
@@ -11,22 +13,20 @@ type Props = {
 const CreateModal = ({ onClose, onSave }: Props) => {
   const [type, setType] = useState<ReminderType>("note");
   const [text, setText] = useState("");
+  const [hasDatetime, setHasDatetime] = useState(false);
   const [datetime, setDatetime] = useState("");
-  const [items, setItems] = useState<
-    { id: string; text: string; checked: boolean }[]
-  >([]);
+  const [items, setItems] = useState<ListItem[]>([]);
   const [newItemText, setNewItemText] = useState("");
 
   const handleSave = () => {
-    if (!datetime) return;
-
     if (type === "note" && !text.trim()) return;
     if (type === "list" && items.length === 0) return;
 
     onSave({
       type,
       text: type === "note" ? text : `Lista com ${items.length} itens`,
-      datetime,
+      datetime: hasDatetime ? datetime : undefined,
+      completed: false,
       items: type === "list" ? items : undefined,
     });
     onClose();
@@ -109,7 +109,7 @@ const CreateModal = ({ onClose, onSave }: Props) => {
               </div>
 
               <div className={styles.itemsList}>
-                {items.map((item) => (
+                {items.map((item: ListItem) => (
                   <div key={item.id} className={styles.item}>
                     <span className={styles.itemText}>{item.text}</span>
                     <button
@@ -129,15 +129,29 @@ const CreateModal = ({ onClose, onSave }: Props) => {
             </div>
           )}
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Quando?</label>
-            <input
-              type="datetime-local"
-              value={datetime}
-              onChange={(e) => setDatetime(e.target.value)}
-              className={styles.input}
-            />
+          <div className={styles.toggleGroup}>
+            <label className={styles.toggleLabel}>
+              <input
+                type="checkbox"
+                checked={hasDatetime}
+                onChange={(e) => setHasDatetime(e.target.checked)}
+                className={styles.toggleCheckbox}
+              />
+              <span className={styles.toggleText}>Definir data e hora</span>
+            </label>
           </div>
+
+          {hasDatetime && (
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Quando?</label>
+              <input
+                type="datetime-local"
+                value={datetime}
+                onChange={(e) => setDatetime(e.target.value)}
+                className={styles.input}
+              />
+            </div>
+          )}
         </div>
 
         <div className={styles.footer}>
@@ -147,7 +161,8 @@ const CreateModal = ({ onClose, onSave }: Props) => {
           <button
             onClick={handleSave}
             disabled={
-              !datetime || (type === "note" ? !text.trim() : items.length === 0)
+              (type === "note" && !text.trim()) ||
+              (type === "list" && items.length === 0)
             }
             className={styles.saveButton}
           >
