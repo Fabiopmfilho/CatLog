@@ -7,6 +7,10 @@ type Props = {
   onClick: () => void;
   onToggleComplete: () => void;
   onToggleItem?: (itemId: string) => void;
+  onDragStart: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragEnd: () => void;
+  isDragging: boolean;
 };
 
 const ReminderCard = ({
@@ -14,6 +18,10 @@ const ReminderCard = ({
   onClick,
   onToggleComplete,
   onToggleItem,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  isDragging,
 }: Props) => {
   const formatDateTime = (datetime: string) => {
     const date = new Date(datetime);
@@ -57,8 +65,14 @@ const ReminderCard = ({
     <div
       className={`${styles.card} ${
         datetimeInfo?.isPast ? styles.cardPast : ""
-      } ${reminder.completed ? styles.cardCompleted : ""}`}
+      } ${reminder.completed ? styles.cardCompleted : ""} ${
+        isDragging ? styles.cardDragging : ""
+      }`}
       onClick={handleCardClick}
+      draggable={true}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
     >
       <div className={styles.content}>
         <div className={styles.typeIcon}>

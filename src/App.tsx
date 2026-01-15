@@ -20,6 +20,7 @@ function App() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("reminders");
@@ -32,6 +33,31 @@ function App() {
 
   const addReminder = (reminder: Omit<Reminder, "id">) => {
     setReminders([...reminders, { ...reminder, id: crypto.randomUUID() }]);
+  };
+
+  const handleDragStart = (id: string) => {
+    setDraggedId(id);
+  };
+
+  const handleDragOver = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault();
+
+    if (!draggedId || draggedId === targetId) return;
+
+    const draggedIndex = reminders.findIndex((r) => r.id === draggedId);
+    const targetIndex = reminders.findIndex((r) => r.id === targetId);
+
+    if (draggedIndex === -1 || targetIndex === -1) return;
+
+    const newReminders = [...reminders];
+    const [draggedItem] = newReminders.splice(draggedIndex, 1);
+    newReminders.splice(targetIndex, 0, draggedItem);
+
+    setReminders(newReminders);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedId(null);
   };
 
   const updateReminder = (
@@ -55,20 +81,7 @@ function App() {
     );
   };
 
-  const sortedReminders = [...reminders].sort((a, b) => {
-    if (a.completed !== b.completed) {
-      return a.completed ? 1 : -1;
-    }
-
-    if (a.datetime && b.datetime) {
-      return new Date(a.datetime).getTime() - new Date(b.datetime).getTime();
-    }
-
-    if (a.datetime) return -1;
-    if (b.datetime) return 1;
-
-    return 0;
-  });
+  const sortedReminders = [...reminders];
 
   return (
     <div className={styles.container}>
@@ -97,6 +110,10 @@ function App() {
                 reminder={reminder}
                 onClick={() => setEditingReminder(reminder)}
                 onToggleComplete={() => toggleComplete(reminder.id)}
+                onDragStart={() => handleDragStart(reminder.id)}
+                onDragOver={(e) => handleDragOver(e, reminder.id)}
+                onDragEnd={handleDragEnd}
+                isDragging={draggedId === reminder.id}
                 onToggleItem={(itemId) => {
                   if (reminder.type === "list" && reminder.items) {
                     const updatedItems = reminder.items.map((item) =>
