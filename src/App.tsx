@@ -104,9 +104,16 @@ function App() {
                         ? { ...item, checked: !item.checked }
                         : item
                     );
+
+                    const allChecked = updatedItems.every(
+                      (item) => item.checked
+                    );
+
                     setReminders(
                       reminders.map((r) =>
-                        r.id === reminder.id ? { ...r, items: updatedItems } : r
+                        r.id === reminder.id
+                          ? { ...r, items: updatedItems, completed: allChecked }
+                          : r
                       )
                     );
                   }
