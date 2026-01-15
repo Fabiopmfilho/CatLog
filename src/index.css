@@ -14,3 +14,11 @@ body {
 button {
   font-family: inherit;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
