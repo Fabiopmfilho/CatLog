@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Calendar, Clock } from "lucide-react";
+import { Plus, Calendar } from "lucide-react";
 import styles from "./App.module.css";
+import ReminderCard from "./components/ReminderCard";
+import EditModal from "./components/EditModal";
 
-type Reminder = {
+export type Reminder = {
   id: string;
   text: string;
   datetime: string;
@@ -12,6 +14,7 @@ function App() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [text, setText] = useState("");
   const [datetime, setDatetime] = useState("");
+  const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("reminders");
@@ -23,32 +26,20 @@ function App() {
   }, [reminders]);
 
   const addReminder = () => {
+    if (!text.trim() || !datetime) return;
     setReminders([...reminders, { id: crypto.randomUUID(), text, datetime }]);
     setText("");
     setDatetime("");
   };
 
-  const deleteReminder = (id: string) => {
-    setReminders(reminders.filter((r) => r.id !== id));
+  const updateReminder = (id: string, text: string, datetime: string) => {
+    setReminders(
+      reminders.map((r) => (r.id === id ? { ...r, text, datetime } : r))
+    );
   };
 
-  const formatDateTime = (datetime: string) => {
-    const date = new Date(datetime);
-    const now = new Date();
-    const isPast = date < now;
-
-    const dateStr = date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "short",
-      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
-    });
-
-    const timeStr = date.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    return { dateStr, timeStr, isPast };
+  const deleteReminder = (id: string) => {
+    setReminders(reminders.filter((r) => r.id !== id));
   };
 
   const sortedReminders = [...reminders].sort(
@@ -106,62 +97,25 @@ function App() {
               </p>
             </div>
           ) : (
-            sortedReminders.map((r) => {
-              const { dateStr, timeStr, isPast } = formatDateTime(r.datetime);
-
-              return (
-                <div
-                  key={r.id}
-                  className={`${styles.reminderCard} ${
-                    isPast ? styles.reminderCardPast : ""
-                  }`}
-                >
-                  <div className={styles.reminderContent}>
-                    <div className={styles.reminderInfo}>
-                      <p
-                        className={`${styles.reminderText} ${
-                          isPast ? styles.reminderTextPast : ""
-                        }`}
-                      >
-                        {r.text}
-                      </p>
-                      <div className={styles.reminderMeta}>
-                        <span
-                          className={`${styles.metaItem} ${
-                            isPast ? styles.metaItemPast : ""
-                          }`}
-                        >
-                          <Calendar size={14} />
-                          <span>{dateStr}</span>
-                        </span>
-                        <span
-                          className={`${styles.metaItem} ${
-                            isPast ? styles.metaItemPast : ""
-                          }`}
-                        >
-                          <Clock size={14} />
-                          <span>{timeStr}</span>
-                        </span>
-                        {isPast && (
-                          <span className={styles.badge}>Vencido</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => deleteReminder(r.id)}
-                      className={styles.deleteButton}
-                      title="Deletar lembrete"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })
+            sortedReminders.map((reminder) => (
+              <ReminderCard
+                key={reminder.id}
+                reminder={reminder}
+                onClick={() => setEditingReminder(reminder)}
+              />
+            ))
           )}
         </div>
       </div>
+
+      {editingReminder && (
+        <EditModal
+          reminder={editingReminder}
+          onClose={() => setEditingReminder(null)}
+          onSave={updateReminder}
+          onDelete={deleteReminder}
+        />
+      )}
     </div>
   );
 }

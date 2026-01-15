@@ -2,13 +2,14 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 50%, #faf5ff 100%);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  padding: 16px;
+  padding: 24px;
 }
 
 .content {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  padding: 0 24px;
 }
 
 .header {
@@ -126,124 +127,27 @@
   margin: 0;
 }
 
-.reminderCard {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  padding: 16px;
-  border: 1px solid #f3f4f6;
-  transition: all 0.2s;
+@media (max-width: 768px) {
+  .content {
+    padding: 0 16px;
+  }
 }
 
-.reminderCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transform: translateY(-1px);
-}
-
-.reminderCardPast {
-  border: 1px solid #fecaca;
-  background: rgba(254, 226, 226, 0.3);
-}
-
-.reminderContent {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.reminderInfo {
-  flex: 1;
-  min-width: 0;
-}
-
-.reminderText {
-  font-weight: 500;
-  color: #111827;
-  margin: 0 0 8px 0;
-  font-size: 15px;
-  word-wrap: break-word;
-}
-
-.reminderTextPast {
-  color: #7f1d1d;
-}
-
-.reminderMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: 14px;
-}
-
-.metaItem {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #6b7280;
-}
-
-.metaItemPast {
-  color: #dc2626;
-}
-
-.badge {
-  padding: 2px 8px;
-  background: #fee2e2;
-  color: #991b1b;
-  font-size: 12px;
-  border-radius: 9999px;
-  font-weight: 500;
-}
-
-.deleteButton {
-  color: #9ca3af;
-  background: transparent;
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.deleteButton:hover {
-  color: #ef4444;
-  background: #fee2e2;
-}
-
-/* queries */
 @media (max-width: 600px) {
   .container {
     padding: 12px;
   }
 
+  .content {
+    padding: 0;
+  }
+
   .addCard {
     padding: 16px;
-  }
-
-  .reminderCard {
-    padding: 12px;
-  }
-
-  .reminderContent {
-    gap: 12px;
-  }
-
-  .emptyState {
-    padding: 32px 16px;
   }
 }
 
 @media (max-width: 400px) {
-  .reminderMeta {
-    flex-direction: column;
-    gap: 6px;
-  }
-
   .addButton span {
     display: none;
   }
