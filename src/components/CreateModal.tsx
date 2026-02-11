@@ -27,6 +27,7 @@ const CreateModal = ({ onClose, onSave }: Props) => {
       text: type === "note" ? text : `Lista com ${items.length} itens`,
       datetime: hasDatetime ? datetime : undefined,
       completed: false,
+      notified: false,
       items: type === "list" ? items : undefined,
     });
     onClose();
