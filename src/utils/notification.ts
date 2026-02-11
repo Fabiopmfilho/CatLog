@@ -19,13 +19,11 @@ export const requestNotificationPermission = async (): Promise<boolean> => {
 export const showNotification = (
   title: string,
   body: string,
-  onClick?: () => void
+  onClick?: () => void,
 ) => {
   if (Notification.permission === "granted") {
     const notification = new Notification(title, {
       body,
-      icon: "/icon.png",
-      badge: "/icon.png",
       tag: "catlog-reminder",
     });
 

@@ -29,6 +29,7 @@ function createWindow() {
   });
 
   win.setMenu(null);
+  win.webContents.openDevTools();
 
   // ✅ Ao invés de fechar, minimiza pra bandeja
   win.on("close", (event) => {
@@ -43,8 +44,11 @@ function createWindow() {
   });
 
   if (VITE_DEV_SERVER_URL) {
+    console.log("🔵 Modo DEV - Carregando:", VITE_DEV_SERVER_URL);
     win.loadURL(VITE_DEV_SERVER_URL);
   } else {
+    const indexPath = path.join(RENDERER_DIST, "index.html");
+    console.log("🟢 Modo BUILD - Carregando:", indexPath);
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
