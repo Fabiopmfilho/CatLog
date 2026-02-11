@@ -24,7 +24,7 @@ export const showNotification = (
   if (Notification.permission === "granted") {
     const notification = new Notification(title, {
       body,
-      tag: "catlog-reminder",
+      tag: "CatLog",
     });
 
     if (onClick) {

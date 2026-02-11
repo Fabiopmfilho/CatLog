@@ -29,9 +29,8 @@ function createWindow() {
   });
 
   win.setMenu(null);
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
-  // ✅ Ao invés de fechar, minimiza pra bandeja
   win.on("close", (event) => {
     if (!isQuitting) {
       event.preventDefault();
@@ -44,18 +43,16 @@ function createWindow() {
   });
 
   if (VITE_DEV_SERVER_URL) {
-    console.log("🔵 Modo DEV - Carregando:", VITE_DEV_SERVER_URL);
+    console.log("🔵 DEV - Loading:", VITE_DEV_SERVER_URL);
     win.loadURL(VITE_DEV_SERVER_URL);
   } else {
     const indexPath = path.join(RENDERER_DIST, "index.html");
-    console.log("🟢 Modo BUILD - Carregando:", indexPath);
+    console.log("🟢 BUILD - Loading:", indexPath);
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
 
-// ✅ Criar ícone da bandeja
 function createTray() {
-  // Cria um ícone simples (você pode substituir por um .png depois)
   const iconPath = path.join(process.env.VITE_PUBLIC, "tray-icon.png");
   const icon = nativeImage.createFromPath(iconPath);
 
@@ -63,7 +60,7 @@ function createTray() {
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: "Abrir catLog",
+      label: "Abrir",
       click: () => {
         win?.show();
       },
@@ -80,17 +77,17 @@ function createTray() {
   tray.setToolTip("catLog - Lembretes");
   tray.setContextMenu(contextMenu);
 
-  // ✅ Click no ícone abre a janela
+  // Click in icon to open window
   tray.on("click", () => {
     win?.show();
   });
 }
 
 app.on("window-all-closed", () => {
-  // ✅ Não fecha o app quando fechar a janela
-  // Só fecha se for Mac (comportamento padrão do macOS)
+  // The app doesn't close when the window is closed.
+  // It only closes on a Mac (default macOS behavior).
   if (process.platform !== "darwin") {
-    // Não faz nada - mantém rodando em background
+    // It does nothing - it keeps running in the background.
   }
 });
 
@@ -104,10 +101,10 @@ app.on("activate", () => {
 
 app.whenReady().then(() => {
   createWindow();
-  createTray(); // ✅ Cria o ícone na bandeja
+  createTray();
 });
 
-// ✅ Previne múltiplas instâncias
+// Prevents multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {

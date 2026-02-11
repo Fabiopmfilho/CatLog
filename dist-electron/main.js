@@ -20,7 +20,6 @@ function createWindow() {
     }
   });
   win.setMenu(null);
-  win.webContents.openDevTools();
   win.on("close", (event) => {
     if (!isQuitting) {
       event.preventDefault();
@@ -31,11 +30,11 @@ function createWindow() {
     win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
   });
   if (VITE_DEV_SERVER_URL) {
-    console.log("🔵 Modo DEV - Carregando:", VITE_DEV_SERVER_URL);
+    console.log("🔵 DEV - Loading:", VITE_DEV_SERVER_URL);
     win.loadURL(VITE_DEV_SERVER_URL);
   } else {
     const indexPath = path.join(RENDERER_DIST, "index.html");
-    console.log("🟢 Modo BUILD - Carregando:", indexPath);
+    console.log("🟢 BUILD - Loading:", indexPath);
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
@@ -45,7 +44,7 @@ function createTray() {
   tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: "Abrir catLog",
+      label: "Abrir",
       click: () => {
         win == null ? void 0 : win.show();
       }
