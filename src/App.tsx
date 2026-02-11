@@ -4,6 +4,10 @@ import styles from "./App.module.css";
 import ReminderCard from "./components/ReminderCard";
 import EditModal from "./components/EditModal";
 import CreateModal from "./components/CreateModal";
+import {
+  requestNotificationPermission,
+  showNotification,
+} from "./utils/notification";
 
 export type ReminderType = "note" | "list";
 
@@ -13,6 +17,7 @@ export type Reminder = {
   text: string;
   datetime?: string;
   completed: boolean;
+  notified?: boolean;
   items?: { id: string; text: string; checked: boolean }[];
 };
 
@@ -23,12 +28,49 @@ function App() {
   const [draggedId, setDraggedId] = useState<string | null>(null);
 
   useEffect(() => {
+    requestNotificationPermission();
+  }, []);
+
+  useEffect(() => {
     const saved = localStorage.getItem("reminders");
     if (saved) setReminders(JSON.parse(saved));
   }, []);
 
   useEffect(() => {
     localStorage.setItem("reminders", JSON.stringify(reminders));
+  }, [reminders]);
+
+  useEffect(() => {
+    const checkReminders = () => {
+      const now = new Date();
+
+      reminders.forEach((reminder) => {
+        if (!reminder.datetime || reminder.completed || reminder.notified) {
+          return;
+        }
+
+        const reminderDate = new Date(reminder.datetime);
+
+        if (reminderDate <= now) {
+          showNotification("⏰ catLog - Lembrete", reminder.text, () => {
+            setEditingReminder(reminder);
+          });
+
+          setReminders((prev) =>
+            prev.map((r) =>
+              r.id === reminder.id ? { ...r, notified: true } : r,
+            ),
+          );
+        }
+      });
+    };
+
+    checkReminders();
+
+    // verify in 30 seconds
+    const interval = setInterval(checkReminders, 30000);
+
+    return () => clearInterval(interval);
   }, [reminders]);
 
   const addReminder = (reminder: Omit<Reminder, "id">) => {
@@ -62,10 +104,10 @@ function App() {
 
   const updateReminder = (
     id: string,
-    updatedReminder: Omit<Reminder, "id">
+    updatedReminder: Omit<Reminder, "id">,
   ) => {
     setReminders(
-      reminders.map((r) => (r.id === id ? { ...updatedReminder, id } : r))
+      reminders.map((r) => (r.id === id ? { ...updatedReminder, id } : r)),
     );
   };
 
@@ -76,8 +118,8 @@ function App() {
   const toggleComplete = (id: string) => {
     setReminders(
       reminders.map((r) =>
-        r.id === id ? { ...r, completed: !r.completed } : r
-      )
+        r.id === id ? { ...r, completed: !r.completed } : r,
+      ),
     );
   };
 
@@ -119,19 +161,19 @@ function App() {
                     const updatedItems = reminder.items.map((item) =>
                       item.id === itemId
                         ? { ...item, checked: !item.checked }
-                        : item
+                        : item,
                     );
 
                     const allChecked = updatedItems.every(
-                      (item) => item.checked
+                      (item) => item.checked,
                     );
 
                     setReminders(
                       reminders.map((r) =>
                         r.id === reminder.id
                           ? { ...r, items: updatedItems, completed: allChecked }
-                          : r
-                      )
+                          : r,
+                      ),
                     );
                   }
                 }}

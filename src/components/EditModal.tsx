@@ -26,6 +26,7 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
       text: reminder.type === "note" ? text : `Lista com ${items.length} itens`,
       datetime: hasDatetime ? datetime : undefined,
       completed: reminder.completed,
+      notified: false,
       items: reminder.type === "list" ? items : undefined,
     });
     onClose();
@@ -52,8 +53,8 @@ const EditModal = ({ reminder, onClose, onSave, onDelete }: Props) => {
   const toggleItem = (id: string) => {
     setItems(
       items.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
+        item.id === id ? { ...item, checked: !item.checked } : item,
+      ),
     );
   };
 
