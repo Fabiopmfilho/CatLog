@@ -52,7 +52,7 @@ function App() {
         const reminderDate = new Date(reminder.datetime);
 
         if (reminderDate <= now) {
-          showNotification("⏰ catLog - Lembrete", reminder.text, () => {
+          showNotification("🐈‍⬛ catLog", reminder.text, () => {
             setEditingReminder(reminder);
           });
 
